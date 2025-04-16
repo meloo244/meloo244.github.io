@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Classe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #6b73ff 0%, #000dff 100%);
+        }
+        .sidebar {
+            transition: all 0.3s;
+        }
+        .sidebar-collapsed {
+            width: 70px;
+        }
+        .sidebar-collapsed .sidebar-text {
+            display: none;
+        }
+        .main-content {
+            transition: all 0.3s;
+        }
+        .main-content-expanded {
+            margin-left: 70px;
+        }
+        .floating-action-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        .session-card:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Login Page -->
+    <div id="login-page" class="min-h-screen flex items-center justify-center gradient-bg">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Gestion de Classe</h1>
+                <p class="text-gray-600 mt-2">Connectez-vous pour accéder à votre espace</p>
+            </div>
+            
+            <div class="flex justify-center mb-6">
+                <div class="inline-flex rounded-md shadow-sm">
+                    <button id="student-login-btn" class="px-4 py-2 text-sm font-medium rounded-l-lg bg-blue-600 text-white focus:z-10 focus:ring-2 focus:ring-blue-500">
+                        Élève
+                    </button>
+                    <button id="admin-login-btn" class="px-4 py-2 text-sm font-medium rounded-r-lg bg-gray-200 text-gray-700 hover:bg-gray-300 focus:z-10 focus:ring-2 focus:ring-blue-500">
+                        Admin
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Student Login Form -->
+            <div id="student-login-form" class="space-y-4">
+                <div>
+                    <label for="student-phone" class="block text-sm font-medium text-gray-700">Numéro de téléphone</label>
+                    <input type="tel" id="student-phone" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="0612345678">
+                </div>
+                <button onclick="loginAsStudent()" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Se connecter
+                </button>
+            </div>
+            
+            <!-- Admin Login Form (hidden by default) -->
+            <div id="admin-login-form" class="space-y-4 hidden">
+                <div>
+                    <label for="admin-username" class="block text-sm font-medium text-gray-700">Nom d'utilisateur</label>
+                    <input type="text" id="admin-username" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="admin">
+                </div>
+                <div>
+                    <label for="admin-password" class="block text-sm font-medium text-gray-700">Mot de passe</label>
+                    <input type="password" id="admin-password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="••••••••">
+                </div>
+                <button onclick="loginAsAdmin()" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Se connecter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Dashboard -->
+    <div id="student-dashboard" class="hidden min-h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar bg-white text-gray-800 w-64 fixed h-full shadow-lg">
+            <div class="p-4 flex items-center space-x-2 border-b border-gray-200">
+                <div class="bg-blue-100 p-2 rounded-full">
+                    <i class="fas fa-user-graduate text-blue-600"></i>
+                </div>
+                <span class="sidebar-text font-semibold">Tableau de Bord Élève</span>
+            </div>
+            <div class="p-4">
+                <div class="flex items-center space-x-3 p-2 rounded-lg bg-blue-50">
+                    <i class="fas fa-user text-blue-600"></i>
+                    <span class="sidebar-text" id="student-name-display">Jean Dupont</span>
+                </div>
+            </div>
+            <nav class="mt-6">
+                <a href="#" class="flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-100 rounded-lg mx-2">
+                    <i class="fas fa-calendar-alt text-blue-600"></i>
+                    <span class="sidebar-text">Mes Sessions</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-100 rounded-lg mx-2">
+                    <i class="fas fa-chart-line text-blue-600"></i>
+                    <span class="sidebar-text">Mes Statistiques</span>
+                </a>
+                <a href="#" onclick="logout()" class="flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-100 rounded-lg mx-2">
+                    <i class="fas fa-sign-out-alt text-blue-600"></i>
+                    <span class="sidebar-text">Déconnexion</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content ml-64 p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Mes Sessions</h2>
+                <div class="relative">
+                    <select class="block appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
+                        <option>Toutes les sessions</option>
+                        <option>À venir</option>
+                        <option>Terminées</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div id="student-sessions" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Sessions will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" class="hidden min-h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar bg-white text-gray-800 w-64 fixed h-full shadow-lg">
+            <div class="p-4 flex items-center space-x-2 border-b border-gray-200">
+                <div class="bg-blue-100 p-2 rounded-full">
+                    <i class="fas fa-user-shield text-blue-600"></i>
+                </div>
+                <span class="sidebar-text font-semibold">Tableau de Bord Admin</span>
+            </div>
+            <div class="p-4">
+                <div class="flex items-center space-x-3 p-2 rounded-lg bg-blue-50">
+                    <i class="fas fa-user-tie text-blue-600"></i>
+                    <span class="sidebar-text">Administrateur</span>
+                </div>
+            </div>
+            <nav class="mt-6">
+                <a href="#" onclick="showAdminSection('dashboard-section')" class="flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-100 rounded-lg mx-2">
+                    <i class="fas fa-tachometer-alt text-blue-600"></i>
+                    <span class="sidebar-text">Tableau de bord</span>
+                </a>
+                <a href="#" onclick="showAdminSection('sessions-section')" class="flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-100 rounded-lg mx-2">
+                    <i class="fas fa-calendar-alt text-blue-600"></i>
+                    <span class="sidebar-text">Gestion des sessions</span>
+                </a>
+                <a href="#" onclick="showAdminSection('students-section')" class="flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-100 rounded-lg mx-2">
+                    <i class="fas fa-users text-blue-600"></i>
+                    <span class="sidebar-text">Gestion des élèves</span>
+                </a>
+                <a href="#" onclick="logout()" class="flex items-center space-x-3 p-3 text-gray-700 hover:bg-gray-100 rounded-lg mx-2">
+                    <i class="fas fa-sign-out-alt text-blue-600"></i>
+                    <span class="sidebar-text">Déconnexion</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content ml-64 p-6">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="admin-section">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Tableau de bord</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500">Sessions à venir</p>
+                                <h3 class="text-2xl font-bold" id="upcoming-sessions-count">12</h3>
+                            </div>
+                            <div class="bg-blue-100 p-3 rounded-full">
+                                <i class="fas fa-calendar-check text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500">Élèves inscrits</p>
+                                <h3 class="text-2xl font-bold" id="students-count">24</h3>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-full">
+                                <i class="fas fa-users text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500">Moyenne générale</p>
+                                <h3 class="text-2xl font-bold" id="average-grade">14.5</h3>
+                            </div>
+                            <div class="bg-purple-100 p-3 rounded-full">
+                                <i class="fas fa-chart-line text-purple-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow mb-8">
+                    <h3 class="text-lg font-semibold mb-4">Prochaines sessions</h3>
+                    <div id="admin-upcoming-sessions">
+                        <!-- Upcoming sessions will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sessions Management Section -->
+            <div id="sessions-section" class="admin-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Gestion des sessions</h2>
+                    <button onclick="showAddSessionModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
+                        <i class="fas fa-plus"></i>
+                        <span>Ajouter une session</span>
+                    </button>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Heure</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sujet</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Élèves</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Note moyenne</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-sessions-table" class="bg-white divide-y divide-gray-200">
+                                <!-- Sessions will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Students Management Section -->
+            <div id="students-section" class="admin-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Gestion des élèves</h2>
+                    <button onclick="showAddStudentModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
+                        <i class="fas fa-plus"></i>
+                        <span>Ajouter un élève</span>
+                    </button>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="mb-4">
+                        <input type="text" id="student-search" placeholder="Rechercher un élève..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prénom</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Téléphone</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Moyenne</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-students-table" class="bg-white divide-y divide-gray-200">
+                                <!-- Students will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating Action Button -->
+        <button id="sidebar-toggle" onclick="toggleSidebar()" class="floating-action-btn bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Add Session Modal -->
+    <div id="add-session-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="p-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold">Ajouter une nouvelle session</h3>
+            </div>
+            <div class="p-4 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date</label>
+                    <input type="date" id="session-date" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Heure de début</label>
+                        <input type="time" id="session-start-time" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Heure de fin</label>
+                        <input type="time" id="session-end-time" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Sujet</label>
+                    <input type="text" id="session-subject" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Mathématiques, Français...">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Élèves</label>
+                    <select id="session-students" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" multiple>
+                        <!-- Students will be loaded here -->
+                    </select>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-200 flex justify-end space-x-3">
+                <button onclick="hideModal('add-session-modal')" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Annuler
+                </button>
+                <button onclick="addNewSession()" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Session Modal -->
+    <div id="edit-session-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="p-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold">Modifier la session</h3>
+            </div>
+            <div class="p-4 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date</label>
+                    <input type="date" id="edit-session-date" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Heure de début</label>
+                        <input type="time" id="edit-session-start-time" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Heure de fin</label>
+                        <input type="time" id="edit-session-end-time" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Sujet</label>
+                    <input type="text" id="edit-session-subject" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Élèves</label>
+                    <select id="edit-session-students" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" multiple>
+                        <!-- Students will be loaded here -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Notes</label>
+                    <div id="edit-session-grades" class="mt-2 space-y-2">
+                        <!-- Grades will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-200 flex justify-end space-x-3">
+                <button onclick="hideModal('edit-session-modal')" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Annuler
+                </button>
+                <button onclick="updateSession()" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div id="add-student-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="p-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold">Ajouter un nouvel élève</h3>
+            </div>
+            <div class="p-4 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nom</label>
+                        <input type="text" id="student-lastname" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Prénom</label>
+                        <input type="text" id="student-firstname" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Numéro de téléphone</label>
+                    <input type="tel" id="student-phone-number" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="0612345678">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="student-email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="eleve@example.com">
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-200 flex justify-end space-x-3">
+                <button onclick="hideModal('add-student-modal')" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Annuler
+                </button>
+                <button onclick="addNewStudent()" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div id="edit-student-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="p-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold">Modifier l'élève</h3>
+            </div>
+            <div class="p-4 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nom</label>
+                        <input type="text" id="edit-student-lastname" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Prénom</label>
+                        <input type="text" id="edit-student-firstname" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Numéro de téléphone</label>
+                    <input type="tel" id="edit-student-phone-number" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="edit-student-email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-200 flex justify-end space-x-3">
+                <button onclick="hideModal('edit-student-modal')" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Annuler
+                </button>
+                <button onclick="updateStudent()" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for demonstration
+        let students = [
+            { id: 1, firstname: "Jean", lastname: "Dupont", phone: "0612345678", email: "jean.dupont@example.com", average: 14.5 },
+            { id: 2, firstname: "Marie", lastname: "Martin", phone: "0623456789", email: "marie.martin@example.com", average: 16.2 },
+            { id: 3, firstname: "Pierre", lastname: "Durand", phone: "0634567890", email: "pierre.durand@example.com", average: 12.8 },
+            { id: 4, firstname: "Sophie", lastname: "Leroy", phone: "0645678901", email: "sophie.leroy@example.com", average: 15.0 },
+            { id: 5, firstname: "Thomas", lastname: "Moreau", phone: "0656789012", email: "thomas.moreau@example.com", average: 13.7 }
+        ];
+
+        let sessions = [
+            { 
+                id: 1, 
+                date: "2023-06-15", 
+                startTime: "09:00", 
+                endTime: "11:00", 
+                subject: "Mathématiques", 
+                students: [1, 2, 3], 
+                grades: [
+                    { studentId: 1, grade: 15 },
+                    { studentId: 2, grade: 18 },
+                    { studentId: 3, grade: 12 }
+                ]
+            },
+            { 
+                id: 2, 
+                date: "2023-06-16", 
+                startTime: "14:00", 
+                endTime: "16:00", 
+                subject: "Français", 
+                students: [1, 3, 4], 
+                grades: [
+                    { studentId: 1, grade: 14 },
+                    { studentId: 3, grade: 13 },
+                    { studentId: 4, grade: 16 }
+                ]
+            },
+            { 
+                id: 3, 
+                date: "2023-06-20", 
+                startTime: "10:00", 
+                endTime: "12:00", 
+                subject: "Histoire", 
+                students: [2, 4, 5], 
+                grades: [
+                    { studentId: 2, grade: 17 },
+                    { studentId: 4, grade: 15 },
+                    { studentId: 5, grade: 14 }
+                ]
+            },
+            { 
+                id: 4, 
+                date: "2023-06-22", 
+                startTime: "13:00", 
+                endTime: "15:00", 
+                subject: "Sciences", 
+                students: [1, 2, 5], 
+                grades: []
+            }
+        ];
+
+        // Current user
+        let currentUser = null;
+        let isAdmin = false;
+
+        // DOM Elements
+        const loginPage = document.getElementById('login-page');
+        const studentDashboard = document.getElementById('student-dashboard');
+        const adminDashboard = document.getElementById('admin-dashboard');
+        const studentLoginForm = document.getElementById('student-login-form');
+        const adminLoginForm = document.getElementById('admin-login-form');
+        const studentLoginBtn = document.getElementById('student-login-btn');
+        const adminLoginBtn = document.getElementById('admin-login-btn');
+        const studentPhoneInput = document.getElementById('student-phone');
+        const adminUsernameInput = document.getElementById('admin-username');
+        const adminPasswordInput = document.getElementById('admin-password');
+        const studentSessionsContainer = document.getElementById('student-sessions');
+        const adminSessionsTable = document.getElementById('admin-sessions-table');
+        const adminStudentsTable = document.getElementById('admin-students-table');
+        const adminUpcomingSessions = document.getElementById('admin-upcoming-sessions');
+        const studentNameDisplay = document.getElementById('student-name-display');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        const mainContent = document.querySelector('.main-content');
+
+        // Event Listeners
+        studentLoginBtn.addEventListener('click', () => {
+            studentLoginForm.classList.remove('hidden');
+            adminLoginForm.classList.add('hidden');
+            studentLoginBtn.classList.remove('bg-gray-200', 'text-gray-700');
+            studentLoginBtn.classList.add('bg-blue-600', 'text-white');
+            adminLoginBtn.classList.remove('bg-blue-600', 'text-white');
+            adminLoginBtn.classList.add('bg-gray-200', 'text-gray-700');
+        });
+
+        adminLoginBtn.addEventListener('click', () => {
+            adminLoginForm.classList.remove('hidden');
+            studentLoginForm.classList.add('hidden');
+            adminLoginBtn.classList.remove('bg-gray-200', 'text-gray-700');
+            adminLoginBtn.classList.add('bg-blue-600', 'text-white');
+            studentLoginBtn.classList.remove('bg-blue-600', 'text-white');
+            studentLoginBtn.classList.add('bg-gray-200', 'text-gray-700');
+        });
+
+        // Functions
+        function loginAsStudent() {
+            const phone = studentPhoneInput.value.trim();
+            
+            if (!phone) {
+                alert("Veuillez entrer votre numéro de téléphone");
+                return;
+            }
+            
+            // Find student by phone
+            const student = students.find(s => s.phone === phone);
+            
+            if (student) {
+                currentUser = student;
+                isAdmin = false;
+                loginPage.classList.add('hidden');
+                studentDashboard.classList.remove('hidden');
+                studentNameDisplay.textContent = `${student.firstname} ${student.lastname}`;
+                loadStudentSessions();
+            } else {
+                alert("Aucun élève trouvé avec ce numéro de téléphone");
+            }
+        }
+
+        function loginAsAdmin() {
+            const username = adminUsernameInput.value.trim();
+            const password = adminPasswordInput.value.trim();
+            
+            if (username === "admin" && password === "admin123") {
+                currentUser = { firstname: "Admin", lastname: "System" };
+                isAdmin = true;
+                loginPage.classList.add('hidden');
+                adminDashboard.classList.remove('hidden');
+                loadAdminDashboard();
+            } else {
+                alert("Identifiants incorrects");
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            isAdmin = false;
+            
+            if (isAdmin) {
+                adminDashboard.classList.add('hidden');
+            } else {
+                studentDashboard.classList.add('hidden');
+            }
+            
+            loginPage.classList.remove('hidden');
+            studentPhoneInput.value = "";
+            adminUsernameInput.value = "";
+            adminPasswordInput.value = "";
+        }
+
+        function loadStudentSessions() {
+            if (!currentUser || isAdmin) return;
+            
+            const studentId = currentUser.id;
+            const today = new Date().toISOString().split('T')[0];
+            
+            const studentSessions = sessions.filter(session => 
+                session.students.includes(studentId)
+            ).sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            studentSessionsContainer.innerHTML = "";
+            
+            if (studentSessions.length === 0) {
+                studentSessionsContainer.innerHTML = `
+                    <div class="col-span-full text-center py-8">
+                        <i class="fas fa-calendar-times text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-500">Aucune session programmée</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            studentSessions.forEach(session => {
+                const sessionDate = new Date(session.date);
+                const isPast = session.date < today;
+                const hasGrade = session.grades.some(g => g.studentId === studentId);
+                let grade = "-";
+                
+                if (hasGrade) {
+                    const gradeObj = session.grades.find(g => g.studentId === studentId);
+                    grade = gradeObj.grade;
+                }
+                
+                studentSessionsContainer.innerHTML += `
+                    <div class="session-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300">
+                        <div class="p-4 ${isPast ? 'bg-gray-100' : 'bg-blue-50'}">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-bold text-lg text-gray-800">${session.subject}</h3>
+                                    <p class="text-sm text-gray-600">${formatDate(session.date)}</p>
+                                </div>
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold ${isPast ? 'bg-gray-200 text-gray-800' : 'bg-blue-200 text-blue-800'}">
+                                    ${isPast ? 'Terminée' : 'À venir'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-4 border-t border-gray-200">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs text-gray-500">Heure</p>
+                                    <p class="font-medium">${session.startTime} - ${session.endTime}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500">Note</p>
+                                    <p class="font-medium ${hasGrade ? (grade >= 10 ? 'text-green-600' : 'text-red-600') : 'text-gray-600'}">
+                                        ${grade}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function loadAdminDashboard() {
+            if (!isAdmin) return;
+            
+            // Update counts
+            const today = new Date().toISOString().split('T')[0];
+            const upcomingSessionsCount = sessions.filter(s => s.date >= today).length;
+            document.getElementById('upcoming-sessions-count').textContent = upcomingSessionsCount;
+            document.getElementById('students-count').textContent = students.length;
+            
+            // Calculate average grade
+            const allGrades = sessions.flatMap(s => s.grades.map(g => g.grade));
+            const averageGrade = allGrades.length > 0 ? 
+                (allGrades.reduce((a, b) => a + b, 0) / allGrades.length).toFixed(1) : "-";
+            document.getElementById('average-grade').textContent = averageGrade;
+            
+            // Load upcoming sessions
+            loadAdminUpcomingSessions();
+            
+            // Load sessions table
+            loadAdminSessionsTable();
+            
+            // Load students table
+            loadAdminStudentsTable();
+        }
+
+        function loadAdminUpcomingSessions() {
+            const today = new Date().toISOString().split('T')[0];
+            const upcomingSessions = sessions.filter(s => s.date >= today)
+                .sort((a, b) => new Date(a.date) - new Date(b.date))
+                .slice(0, 5);
+            
+            adminUpcomingSessions.innerHTML = "";
+            
+            if (upcomingSessions.length === 0) {
+                adminUpcomingSessions.innerHTML = `
+                    <div class="text-center py-4 text-gray-500">
+                        Aucune session à venir
+                    </div>
+                `;
+                return;
+            }
+            
+            upcomingSessions.forEach(session => {
+                const studentsCount = session.students.length;
+                const gradesCount = session.grades.length;
+                const averageGrade = gradesCount > 0 ? 
+                    (session.grades.reduce((a, g) => a + g.grade, 0) / gradesCount).toFixed(1) : "-";
+                
+                adminUpcomingSessions.innerHTML += `
+                    <div class="border-b border-gray-200 py-3 last:border-0">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium">${session.subject}</h4>
+                                <p class="text-sm text-gray-600">${formatDate(session.date)} • ${session.startTime} - ${session.endTime}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm">${studentsCount} élève(s)</p>
+                                <p class="text-sm font-medium ${averageGrade !== "-" ? (averageGrade >= 10 ? 'text-green-600' : 'text-red-600') : 'text-gray-600'}">
+                                    Moyenne: ${averageGrade}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function loadAdminSessionsTable() {
+            adminSessionsTable.innerHTML = "";
+            
+            sessions.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(session => {
+                const sessionDate = new Date(session.date);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const isPast = sessionDate < today;
+                const studentsCount = session.students.length;
+                const gradesCount = session.grades.length;
+                const averageGrade = gradesCount > 0 ? 
+                    (session.grades.reduce((a, g) => a + g.grade, 0) / gradesCount).toFixed(1) : "-";
+                
+                adminSessionsTable.innerHTML += `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm ${isPast ? 'text-gray-500' : 'text-gray-900'}">
+                            ${formatDate(session.date)}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm ${isPast ? 'text-gray-500' : 'text-gray-900'}">
+                            ${session.startTime} - ${session.endTime}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ${isPast ? 'text-gray-500' : 'text-gray-900'}">
+                            ${session.subject}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm ${isPast ? 'text-gray-500' : 'text-gray-900'}">
+                            ${studentsCount}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ${averageGrade !== "-" ? (averageGrade >= 10 ? 'text-green-600' : 'text-red-600') : 'text-gray-500'}">
+                            ${averageGrade}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="editSession(${session.id})" class="text-blue-600 hover:text-blue-900 mr-3">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteSession(${session.id})" class="text-red-600 hover:text-red-900">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function loadAdminStudentsTable() {
+            adminStudentsTable.innerHTML = "";
+            
+            students.forEach(student => {
+                const sessionsCount = sessions.filter(s => s.students.includes(student.id)).length;
+                const gradedSessions = sessions.filter(s => 
+                    s.grades.some(g => g.studentId === student.id)
+                );
+                const averageGrade = gradedSessions.length > 0 ? 
+                    (gradedSessions.flatMap(s => s.grades.filter(g => g.studentId === student.id))
+                        .reduce((a, g) => a + g.grade, 0) / gradedSessions.length).toFixed(1) : "-";
+                
+                adminStudentsTable.innerHTML += `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ${student.lastname}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ${student.firstname}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${student.phone}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${student.email}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ${averageGrade !== "-" ? (averageGrade >= 10 ? 'text-green-600' : 'text-red-600') : 'text-gray-500'}">
+                            ${averageGrade}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="editStudent(${student.id})" class="text-blue-600 hover:text-blue-900 mr-3">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteStudent(${student.id})" class="text-red-600 hover:text-red-900">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function showAdminSection(sectionId) {
+            document.querySelectorAll('.admin-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('sidebar-collapsed');
+            mainContent.classList.toggle('main-content-expanded');
+        }
+
+        function showAddSessionModal() {
+            const sessionStudentsSelect = document.getElementById('session-students');
+            sessionStudentsSelect.innerHTML = "";
+            
+            students.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.textContent = `${student.firstname} ${student.lastname}`;
+                sessionStudentsSelect.appendChild(option);
+            });
+            
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('session-date').value = today;
+            
+            document.getElementById('add-session-modal').classList.remove('hidden');
+        }
+
+        function showAddStudentModal() {
+            // Clear form
+            document.getElementById('student-firstname').value = "";
+            document.getElementById('student-lastname').value = "";
+            document.getElementById('student-phone-number').value = "";
+            document.getElementById('student-email').value = "";
+            
+            document.getElementById('add-student-modal').classList.remove('hidden');
+        }
+
+        function editSession(sessionId) {
+            const session = sessions.find(s => s.id === sessionId);
+            if (!session) return;
+            
+            document.getElementById('edit-session-date').value = session.date;
+            document.getElementById('edit-session-start-time').value = session.startTime;
+            document.getElementById('edit-session-end-time').value = session.endTime;
+            document.getElementById('edit-session-subject').value = session.subject;
+            
+            const sessionStudentsSelect = document.getElementById('edit-session-students');
+            sessionStudentsSelect.innerHTML = "";
+            
+            students.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.textContent = `${student.firstname} ${student.lastname}`;
+                option.selected = session.students.includes(student.id);
+                sessionStudentsSelect.appendChild(option);
+            });
+            
+            const gradesContainer = document.getElementById('edit-session-grades');
+            gradesContainer.innerHTML = "";
+            
+            session.students.forEach(studentId => {
+                const student = students.find(s => s.id === studentId);
+                if (!student) return;
+                
+                const gradeObj = session.grades.find(g => g.studentId === studentId);
+                const gradeValue = gradeObj ? gradeObj.grade : "";
+                
+                gradesContainer.innerHTML += `
+                    <div class="flex items-center justify-between">
+                        <label class="text-sm">${student.firstname} ${student.lastname}</label>
+                        <input type="number" min="0" max="20" step="0.5" 
+                            value="${gradeValue}" 
+                            data-student-id="${studentId}"
+                            class="w-20 px-2 py-1 border border-gray-300 rounded-md">
+                    </div>
+                `;
+            });
+            
+            // Store session ID in a data attribute for the update function
+            document.getElementById('edit-session-modal').setAttribute('data-session-id', sessionId);
+            document.getElementById('edit-session-modal').classList.remove('hidden');
+        }
+
+        function editStudent(studentId) {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+            
+            document.getElementById('edit-student-firstname').value = student.firstname;
+            document.getElementById('edit-student-lastname').value = student.lastname;
+            document.getElementById('edit-student-phone-number').value = student.phone;
+            document.getElementById('edit-student-email').value = student.email;
+            
+            // Store student ID in a data attribute for the update function
+            document.getElementById('edit-student-modal').setAttribute('data-student-id', studentId);
+            document.getElementById('edit-student-modal').classList.remove('hidden');
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function addNewSession() {
+            const date = document.getElementById('session-date').value;
+            const startTime = document.getElementById('session-start-time').value;
+            const endTime = document.getElementById('session-end-time').value;
+            const subject = document.getElementById('session-subject').value;
+            const selectedStudents = Array.from(document.getElementById('session-students').selectedOptions)
+                .map(option => parseInt(option.value));
+            
+            if (!date || !startTime || !endTime || !subject || selectedStudents.length === 0) {
+                alert("Veuillez remplir tous les champs");
+                return;
+            }
+            
+            const newSession = {
+                id: sessions.length > 0 ? Math.max(...sessions.map(s => s.id)) + 1 : 1,
+                date,
+                startTime,
+                endTime,
+                subject,
+                students: selectedStudents,
+                grades: []
+            };
+            
+            sessions.push(newSession);
+            hideModal('add-session-modal');
+            loadAdminDashboard();
+        }
+
+        function addNewStudent() {
+            const firstname = document.getElementById('student-firstname').value.trim();
+            const lastname = document.getElementById('student-lastname').value.trim();
+            const phone = document.getElementById('student-phone-number').value.trim();
+            const email = document.getElementById('student-email').value.trim();
+            
+            if (!firstname || !lastname || !phone) {
+                alert("Veuillez remplir au moins le prénom, le nom et le téléphone");
+                return;
+            }
+            
+            // Check if phone already exists
+            if (students.some(s => s.phone === phone)) {
+                alert("Un élève avec ce numéro de téléphone existe déjà");
+                return;
+            }
+            
+            const newStudent = {
+                id: students.length > 0 ? Math.max(...students.map(s => s.id)) + 1 : 1,
+                firstname,
+                lastname,
+                phone,
+                email: email || null,
+                average: 0
+            };
+            
+            students.push(newStudent);
+            hideModal('add-student-modal');
+            loadAdminDashboard();
+        }
+
+        function updateSession() {
+            const sessionId = parseInt(document.getElementById('edit-session-modal').getAttribute('data-session-id'));
+            const session = sessions.find(s => s.id === sessionId);
+            if (!session) return;
+            
+            session.date = document.getElementById('edit-session-date').value;
+            session.startTime = document.getElementById('edit-session-start-time').value;
+            session.endTime = document.getElementById('edit-session-end-time').value;
+            session.subject = document.getElementById('edit-session-subject').value;
+            session.students = Array.from(document.getElementById('edit-session-students').selectedOptions)
+                .map(option => parseInt(option.value));
+            
+            // Update grades
+            session.grades = [];
+            const gradeInputs = document.querySelectorAll('#edit-session-grades input');
+            gradeInputs.forEach(input => {
+                const studentId = parseInt(input.getAttribute('data-student-id'));
+                const grade = parseFloat(input.value);
+                
+                if (!isNaN(grade)) {
+                    session.grades.push({ studentId, grade });
+                }
+            });
+            
+            hideModal('edit-session-modal');
+            loadAdminDashboard();
+            
+            // If current user is a student and is in this session, reload their sessions
+            if (!isAdmin && currentUser && session.students.includes(currentUser.id)) {
+                loadStudentSessions();
+            }
+        }
+
+        function updateStudent() {
+            const studentId = parseInt(document.getElementById('edit-student-modal').getAttribute('data-student-id'));
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+            
+            const firstname = document.getElementById('edit-student-firstname').value.trim();
+            const lastname = document.getElementById('edit-student-lastname').value.trim();
+            const phone = document.getElementById('edit-student-phone-number').value.trim();
+            const email = document.getElementById('edit-student-email').value.trim();
+            
+            if (!firstname || !lastname || !phone) {
+                alert("Veuillez remplir au moins le prénom, le nom et le téléphone");
+                return;
+            }
+            
+            // Check if phone already exists for another student
+            if (students.some(s => s.phone === phone && s.id !== studentId)) {
+                alert("Un autre élève avec ce numéro de téléphone existe déjà");
+                return;
+            }
+            
+            student.firstname = firstname;
+            student.lastname = lastname;
+            student.phone = phone;
+            student.email = email || null;
+            
+            hideModal('edit-student-modal');
+            loadAdminDashboard();
+            
+            // Update student name in student dashboard if it's the current user
+            if (!isAdmin && currentUser && currentUser.id === studentId) {
+                studentNameDisplay.textContent = `${firstname} ${lastname}`;
+            }
+        }
+
+        function deleteSession(sessionId) {
+            if (confirm("Êtes-vous sûr de vouloir supprimer cette session ?")) {
+                sessions = sessions.filter(s => s.id !== sessionId);
+                loadAdminDashboard();
+                
+                // If current user is a student, reload their sessions
+                if (!isAdmin && currentUser) {
+                    loadStudentSessions();
+                }
+            }
+        }
+
+        function deleteStudent(studentId) {
+            if (confirm("Êtes-vous sûr de vouloir supprimer cet élève ? Toutes ses sessions seront également supprimées.")) {
+                // Remove student from sessions
+                sessions.forEach(session => {
+                    session.students = session.students.filter(id => id !== studentId);
+                    session.grades = session.grades.filter(g => g.studentId !== studentId);
+                });
+                
+                // Remove student
+                students = students.filter(s => s.id !== studentId);
+                loadAdminDashboard();
+                
+                // If deleted student is the current user, log them out
+                if (!isAdmin && currentUser && currentUser.id === studentId) {
+                    logout();
+                }
+            }
+        }
+
+        function formatDate(dateString) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('fr-FR', options);
+        }
+
+        // Initialize
+        showAdminSection('dashboard-section');
+    </script>
+<p style="border-radius: 8px; text-align: center; font-size: 12px; color: #fff; margin-top: 16px;position: fixed; left: 8px; bottom: 8px; z-index: 10; background: rgba(0, 0, 0, 0.8); padding: 4px 8px;">Made with <img src="https://enzostvs-deepsite.hf.space/logo.svg" alt="DeepSite Logo" style="width: 16px; height: 16px; vertical-align: middle;display:inline-block;margin-right:3px;filter:brightness(0) invert(1);"><a href="https://enzostvs-deepsite.hf.space" style="color: #fff;text-decoration: underline;" target="_blank" >DeepSite</a> - 🧬 <a href="https://enzostvs-deepsite.hf.space?remix=melon44/dashboard" style="color: #fff;text-decoration: underline;" target="_blank" >Remix</a></p></body>
+</html>
